@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { NewTaskData, EditTask, Task } from "../types";
+import type { NewTaskData, Task } from "../types";
 
 interface TaskFormProps {
   mode: "create" | "edit";
   initialTask?: Task;
-  onSubmit: (data: NewTaskData | EditTask) => Promise<void>;
+  onSubmit: (data: NewTaskData) => Promise<void>;
 }
 
 const TaskForm = ({ mode, initialTask, onSubmit }: TaskFormProps) => {
@@ -39,7 +39,7 @@ const TaskForm = ({ mode, initialTask, onSubmit }: TaskFormProps) => {
     e.preventDefault();
 
     const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
+    if (Object.keys(validationErrors).length > 0 || !category) {
       setErrors(validationErrors);
       return;
     }

@@ -44,7 +44,7 @@ export interface NewTaskData {
   dueDate: string;
 }
 
-export type EditTask = Partial<NewTaskData>;
+export type EditTask = Partial<NewTaskData & { completed: boolean }>;
 
 export interface TaskContextValue {
   tasks: Task[];

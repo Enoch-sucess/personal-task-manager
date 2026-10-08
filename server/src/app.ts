@@ -1,15 +1,22 @@
 import express, { Application } from "express";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
+import cors from "cors";
 
 const app: Application = express();
+
+const allowedOrigins = ["http://localhost:5173"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/task", taskRoutes);
 
-app.get("/api/task-test", (req, res) => {
-  res.send("task test route works");
-});
 export default app;

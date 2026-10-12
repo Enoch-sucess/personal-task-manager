@@ -5,6 +5,7 @@ import MyTasks from "./pages/MyTasks";
 import NewTask from "./pages/NewTask";
 import EditTask from "./pages/EditTask";
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/welcome" element={<Landing />} />
+        <Route path="login" element={<Login />} />
         <Route path="/" element={<MyTasks />} />
         <Route path="/new" element={<NewTask />} />
         <Route path="/edit/:id" element={<EditTask />} />

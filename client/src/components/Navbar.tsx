@@ -21,6 +21,12 @@ const Navbar = () => {
           <Link to="/" className="hover:text-[#974FD0]">
             All Tasks
           </Link>
+          <Link
+            to="/login"
+            className="border border-[#974FD0] text-[#974FD0] px-3 py-1.5 rounded-md hover:bg-[#974FD0] hover:text-white transition-colors"
+          >
+            Login
+          </Link>
           <img src={avatar} alt="" />
         </nav>
 
@@ -53,6 +59,13 @@ const Navbar = () => {
             className="py-2 hover:text-[#974FD0]"
           >
             All Tasks
+          </Link>
+          <Link
+            to="/login"
+            onClick={() => setIsOpen(false)}
+            className="py-2 text-[#974FD0]"
+          >
+            Login
           </Link>
         </nav>
       )}

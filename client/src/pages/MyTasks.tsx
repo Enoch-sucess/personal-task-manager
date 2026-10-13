@@ -134,42 +134,7 @@ const MyTasks = () => {
           ) : (
             <div className="flex flex-col gap-4">
               {results.map((task) => (
-                <article
-                  key={task._id}
-                  className="border border-gray-200 rounded-xl p-4 bg-white"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold text-gray-900">
-                      {task.title}
-                    </h3>
-
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full ${
-                        task.completed
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {task.completed ? "Completed" : "Incomplete"}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-gray-600 mt-2">
-                    {task.description || "No description"}
-                  </p>
-
-                  <div className="flex flex-wrap gap-3 mt-4 text-sm text-gray-500">
-                    <span>Category: {task.category}</span>
-                    <span>
-                      Due:{" "}
-                      {task.dueDate
-                        ? new Date(
-                            task.dueDate + "T00:00:00",
-                          ).toLocaleDateString()
-                        : "No due date"}
-                    </span>
-                  </div>
-                </article>
+                <TaskCard key={task._id} task={task} readOnly />
               ))}
             </div>
           )}

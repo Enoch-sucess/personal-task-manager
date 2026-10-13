@@ -4,6 +4,7 @@ import bin from "../assets/delete.svg";
 
 interface TaskCardProps {
   task: Task;
+  readOnly?: boolean;
   onToggleComplete: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
@@ -17,6 +18,7 @@ const CATEGORY_STYLES: Record<Task["category"], string> = {
 
 const TaskCard = ({
   task,
+  readOnly = false,
   onToggleComplete,
   onDelete,
   onEdit,
@@ -29,22 +31,24 @@ const TaskCard = ({
         >
           {task.category}
         </span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onEdit(task._id)}
-            className="flex items-center gap-1 bg-[#974FD0] text-white px-3 py-1.5 rounded-md text-sm"
-          >
-            <img src={edit} alt="" className="w-4 h-4" />
-            Edit
-          </button>
-          <button
-            onClick={() => onDelete(task._id)}
-            className="flex items-center gap-1 border border-[#974FD0] text-[#974FD0] px-3 py-1.5 rounded-md text-sm"
-          >
-            <img src={bin} alt="" className="w-4 h-4" />
-            Delete
-          </button>
-        </div>
+        {!readOnly && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onEdit(task._id)}
+              className="flex items-center gap-1 bg-[#974FD0] text-white px-3 py-1.5 rounded-md text-sm"
+            >
+              <img src={edit} alt="" className="w-4 h-4" />
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(task._id)}
+              className="flex items-center gap-1 border border-[#974FD0] text-[#974FD0] px-3 py-1.5 rounded-md text-sm"
+            >
+              <img src={bin} alt="" className="w-4 h-4" />
+              Delete
+            </button>
+          </div>
+        )}
       </div>
 
       <h3
@@ -58,14 +62,20 @@ const TaskCard = ({
       <div className="flex items-center justify-between">
         <p className="text-gray-800 text-xs mt-3">Due: {task.dueDate}</p>
 
-        <label className="flex items-center gap-2 text-sm text-gray-600 mt-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={task.completed}
-            onChange={() => onToggleComplete(task._id)}
-          />
-          {task.completed ? "Completed" : "Mark complete"}
-        </label>
+        {readOnly ? (
+          <p className="text-sm text-gray-600 mt-3">
+            {task.completed ? "Completed" : "Incomplete"}
+          </p>
+        ) : (
+          <label className="flex items-center gap-2 text-sm text-gray-600 mt-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={() => onToggleComplete?.(task._id)}
+            />
+            {task.completed ? "Completed" : "Mark complete"}
+          </label>
+        )}
       </div>
     </div>
   );

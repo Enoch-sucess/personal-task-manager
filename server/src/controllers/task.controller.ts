@@ -1,6 +1,15 @@
 import { Response } from "express";
-import Task from "../models/Task";
 import { AuthRequest } from "../types/authRequest";
+import mongoose from "mongoose";
+import Task from "../models/Task";
+
+interface TaskFilter {
+  user: mongoose.Types.ObjectId;
+  $or?: Array<
+    | { title: { $regex: string; $options: string } }
+    | { description: { $regex: string; $options: string } }
+  >;
+}
 
 export const createTask = async (
   req: AuthRequest,
@@ -55,7 +64,20 @@ export const getTasks = async (
       return;
     }
 
-    const tasks = await Task.find({ user: req.user._id }).sort({
+    const { search } = req.query;
+
+    const filter: TaskFilter = {
+      user: req.user._id,
+    };
+
+    if (typeof search === "string" && search.trim() !== "") {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const tasks = await Task.find(filter).sort({
       createdAt: -1,
     });
 
@@ -137,6 +159,7 @@ export const updateTask = async (
   }
 };
 
+// deleting a task
 export const deleteTask = async (
   req: AuthRequest,
   res: Response,

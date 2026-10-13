@@ -11,26 +11,29 @@ TypeScript, and Tailwind CSS.
 
 ## Setup Instructions
 
-1. Clone the repo:
+You need **two terminals**, one for the server and one for the client.
 
-```bash
-   git clone https://github.com/Enoch-sucess/personal-task-manager.git
-   cd personal-task-manager/client
+**Server**
+
+1. `cd server`
+2. `npm install`
+3. Create `server/.env`:
+
+```
+   MONGO_URI=your-mongodb-connection-string
+   JWT_SECRET=a-long-random-string
+   PORT=5000
 ```
 
-2. Install dependencies:
+4. `npm run dev`
 
-```bash
-   npm install
-```
+**Client**
 
-3. Run the dev server:
-
-```bash
-   npm run dev
-```
-
-4. Open the local URL Vite prints in the terminal (usually `http://localhost:5173`).
+1. `cd client`
+2. `npm install`
+3. (Optional) create `client/.env` with `VITE_API_URL=http://localhost:5000`.
+   If omitted, the client defaults to `http://localhost:5000`.
+4. `npm run dev` and open `http://localhost:5173`
 
 ## Features
 
@@ -57,11 +60,7 @@ a page refresh.
 - React Router (client-side routing between My Tasks / New Task / Edit Task
   / Landing pages)
 
-## Known Issues
-
-None currently known.
-
-## Week 3: Search Feature (branch: `feature/search`)
+  ## Week 3: Search Feature (branch: `feature/search`)
 
 A search box on the My Tasks page that finds tasks by **title or description**.
 The search runs on the backend: the client calls
@@ -82,32 +81,6 @@ server returns only that user's matching tasks (case-insensitive).
   - Search results use the same task card as the main list, in read-only
     mode.
 - CORS is enabled on the server for the client's origin.
-
-## Setup Instructions
-
-You need **two terminals**, one for the server and one for the client.
-
-**Server**
-
-1. `cd server`
-2. `npm install`
-3. Create `server/.env`:
-
-```
-   MONGO_URI=your-mongodb-connection-string
-   JWT_SECRET=a-long-random-string
-   PORT=5000
-```
-
-4. `npm run dev`
-
-**Client**
-
-1. `cd client`
-2. `npm install`
-3. (Optional) create `client/.env` with `VITE_API_URL=http://localhost:5000`.
-   If omitted, the client defaults to `http://localhost:5000`.
-4. `npm run dev` and open `http://localhost:5173`
 
 **Using search**
 

@@ -1,12 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo.svg";
 import profile from "../assets/profile.svg";
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [showDropdown, setShowDropdown] = useState(false);

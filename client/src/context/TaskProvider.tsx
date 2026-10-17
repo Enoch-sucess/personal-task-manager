@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext, type ReactNode } from "react";
-import axios from "axios";
+import { useState, useEffect, type ReactNode } from "react";
 import api from "../api/axios";
-import { AuthContext } from "./AuthContext";
+import { useAuth } from "./AuthContext";
 import { TaskContext } from "./TaskContext";
+import { getErrorMessage } from "../utils/getErrorMessage";
 import type { Task, NewTaskData, EditTask } from "../types";
 
 interface TaskProviderProps {
@@ -10,42 +10,38 @@ interface TaskProviderProps {
 }
 
 const TaskProvider = ({ children }: TaskProviderProps) => {
-  const { user } = useContext(AuthContext);
+  const { user, loading: authLoading } = useAuth();
   const userId = user?._id;
 
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [tasksLoading, setTasksLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load this user's tasks whenever the logged-in user changes
   useEffect(() => {
+    if (authLoading) return;
+
     if (!userId) {
       setTasks([]);
+      setTasksLoading(false);
       return;
     }
 
     const loadTasks = async () => {
-      setLoading(true);
+      setTasksLoading(true);
       setError(null);
       try {
         const { data } = await api.get<{ tasks: Task[] }>("/api/task");
         setTasks(data.tasks);
       } catch (err) {
-        setError(
-          axios.isAxiosError(err)
-            ? (err.response?.data?.message ?? "Could not load tasks")
-            : "Could not load tasks",
-        );
+        setError(getErrorMessage(err, "Could not load tasks"));
       } finally {
-        setLoading(false);
+        setTasksLoading(false);
       }
     };
 
     loadTasks();
-  }, [userId]);
+  }, [userId, authLoading]);
 
-  // The three writes don't catch errors on purpose: the calling page
-  // decides what to show, and must not navigate away if saving failed.
   const createTask = async (taskData: NewTaskData): Promise<void> => {
     const { data } = await api.post<Task>("/api/task", taskData);
     setTasks((prev) => [data, ...prev]);
@@ -63,7 +59,7 @@ const TaskProvider = ({ children }: TaskProviderProps) => {
 
   const value = {
     tasks,
-    loading,
+    loading: authLoading || tasksLoading,
     error,
     createTask,
     updateTask,

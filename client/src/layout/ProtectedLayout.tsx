@@ -1,10 +1,9 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const ProtectedLayout = () => {
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading } = useAuth();
 
   if (loading) return <p>Loading...</p>;
 

@@ -1,19 +1,20 @@
 import express, { Application } from "express";
+import cors from "cors";
 import authRoutes from "./routes/auth.routes";
 import taskRoutes from "./routes/task.routes";
-import cors from "cors";
 
 const app: Application = express();
 
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+// Local dev origin, plus any deployed client URLs from CLIENT_URL
+// (comma-separated, no trailing slash).
+const allowedOrigins = [
+  "http://localhost:5173",
+  ...(process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(",").map((url) => url.trim())
+    : []),
+];
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  }),
-);
-
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

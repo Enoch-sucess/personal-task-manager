@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import MyTasks from "./pages/MyTasks";
 import NewTask from "./pages/NewTask";
 import EditTask from "./pages/EditTask";
@@ -22,6 +22,7 @@ function App() {
         theme="light"
       />
       <Routes>
+        <Route path="/welcome" element={<Navigate to="/welcome" replace />} />
         <Route path="/welcome" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />

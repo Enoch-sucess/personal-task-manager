@@ -20,7 +20,7 @@ const Error = () => {
         </p>
 
         <Link
-          to="/welcome"
+          to="/signin"
           className="no-underline p-[16px] rounded-[10px] bg-[#974FD0] font-montserrat font-semibold text-[20px] text-white cursor-pointer"
         >
           Go Back Home

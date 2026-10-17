@@ -22,7 +22,7 @@ function App() {
         theme="light"
       />
       <Routes>
-        <Route path="/welcome" element={<Navigate to="/welcome" replace />} />
+        <Route path="/" element={<Navigate to="/welcome" replace />} />
         <Route path="/welcome" element={<Landing />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />

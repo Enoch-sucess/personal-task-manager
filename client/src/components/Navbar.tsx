@@ -1,73 +1,129 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/Logo.svg";
-import avatar from "../assets/profile.svg";
-import { useState } from "react";
+import profile from "../assets/profile.svg";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+    setShowMobileMenu(false);
+    navigate("/signin");
+  };
 
   return (
-    <header className="border-b border-gray-200 bg-white relative">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-4">
+    <header className="relative border-b border-black/20 bg-white">
+      <div className="flex items-center justify-between px-4 sm:px-8 md:px-[100px] py-[7px]">
+        {/* Left: logo */}
         <Link to="/welcome">
-          <img src={logo} alt="" />
+          <img src={logo} alt="Logo" className="h-8 md:h-auto" />
         </Link>
 
-        {/* Hide navbar on small screen */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-          <Link to="/new" className="hover:text-[#974FD0]">
-            New Task
-          </Link>
-          <Link to="/" className="hover:text-[#974FD0]">
-            All Tasks
-          </Link>
-          <Link
-            to="/login"
-            className="border border-[#974FD0] text-[#974FD0] px-3 py-1.5 rounded-md hover:bg-[#974FD0] hover:text-white transition-colors"
-          >
-            Login
-          </Link>
-          <img src={avatar} alt="" />
-        </nav>
+        {/* Right: links + avatar, all pushed to the far right by justify-between */}
+        <div className="flex items-center gap-5">
+          {user ? (
+            <>
+              {/* Desktop links: hidden on mobile, where the hamburger takes over */}
+              <nav className="hidden md:flex items-center gap-5">
+                <Link to="/new" className="font-semibold text-[#292929]">
+                  New Task
+                </Link>
+                <Link to="/mytask" className="font-semibold text-[#292929]">
+                  All Task
+                </Link>
+              </nav>
 
-        {/* Hamburger menu- visible on small screen */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden flex flex-col gap-1.5 p-2"
-          aria-label="Toggle menu"
-        >
-          <span className="w-6 h-0.5 bg-gray-700" />
-          <span className="w-6 h-0.5 bg-gray-700" />
-          <span className="w-6 h-0.5 bg-gray-700" />
-        </button>
+              {/* Desktop avatar + logout dropdown: the last item, so it sits at the far right */}
+              <div className="relative hidden md:block">
+                <button
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  aria-label="Open profile menu"
+                >
+                  <img
+                    src={profile}
+                    alt="profile"
+                    title={user.username}
+                    className="w-10 h-10 rounded-full"
+                  />
+                </button>
+
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100 rounded-md"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile hamburger */}
+              <button
+                onClick={() => setShowMobileMenu((prev) => !prev)}
+                className="md:hidden p-2"
+                aria-label="Toggle menu"
+              >
+                {showMobileMenu ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </>
+          ) : (
+            /* Logged out: one set of buttons that scales with screen size */
+            <div className="flex items-center gap-2 md:gap-5">
+              <Link
+                to="/signin"
+                className="px-3 py-2 text-sm md:px-4 md:py-3 md:text-base text-white bg-[#974FD0] rounded-md"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="px-3 py-2 text-sm md:px-4 md:py-3 md:text-base border border-[#974FD0] text-[#974FD0] rounded-md"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Mobile dropdown menu - only rendered when open */}
-      {isOpen && (
-        <nav className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 flex flex-col gap-1 px-4 text-sm font-medium text-gray-600">
+      {/* Mobile dropdown: overlays the page instead of pushing content down */}
+      {user && showMobileMenu && (
+        <div className="md:hidden absolute top-full left-0 w-full z-20 flex flex-col gap-1 px-4 pb-4 bg-white border-b border-black/20 shadow-md">
           <Link
             to="/new"
-            onClick={() => setIsOpen(false)}
-            className="py-2 hover:text-[#974FD0]"
+            onClick={() => setShowMobileMenu(false)}
+            className="font-montserrat font-semibold text-black py-3 border-b border-black/10"
           >
             New Task
           </Link>
-
           <Link
-            to="/"
-            onClick={() => setIsOpen(false)}
-            className="py-2 hover:text-[#974FD0]"
+            to="/mytask"
+            onClick={() => setShowMobileMenu(false)}
+            className="font-montserrat font-semibold text-black py-3 border-b border-black/10"
           >
-            All Tasks
+            All Task
           </Link>
-          <Link
-            to="/login"
-            onClick={() => setIsOpen(false)}
-            className="py-2 text-[#974FD0]"
+          <div className="flex items-center gap-3 py-3">
+            <img src={profile} alt="Profile" className="w-8 h-8 rounded-full" />
+            <span className="text-sm text-black/70">{user.username}</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-left text-red-500 font-semibold py-2"
           >
-            Login
-          </Link>
-        </nav>
+            Logout
+          </button>
+        </div>
       )}
     </header>
   );

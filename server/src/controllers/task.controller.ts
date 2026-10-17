@@ -70,6 +70,10 @@ export const getTasks = async (
       user: req.user._id,
     };
 
+    // const filter: mongoose.FilterQuery<ITask> = {
+    // user: req.user._id,
+    // };
+
     if (typeof search === "string" && search.trim() !== "") {
       filter.$or = [
         { title: { $regex: search, $options: "i" } },

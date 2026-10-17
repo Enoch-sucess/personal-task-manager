@@ -48,8 +48,7 @@ export type EditTask = Partial<NewTaskData & { completed: boolean }>;
 
 export interface TaskContextValue {
   tasks: Task[];
-  ongoing: Task[];
-  completed: Task[];
+  loading: boolean;
   error: string | null;
   createTask: (taskData: NewTaskData) => Promise<void>;
   updateTask: (id: string, updatedTask: EditTask) => Promise<void>;

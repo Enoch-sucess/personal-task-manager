@@ -20,7 +20,7 @@ const protect = async (
   }
 
   try {
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.split(" ")[1]!;
 
     const secret = process.env.JWT_SECRET;
     if (!secret) {

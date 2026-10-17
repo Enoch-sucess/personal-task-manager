@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useTask } from "../context/TaskContext";
 import TaskCard from "../components/TaskCard";
 import { useSearch } from "../hooks/useSearch";
+import { getErrorMessage } from "../utils/getErrorMessage";
 
 const MyTasks = () => {
-  const { tasks, updateTask, deleteTask } = useTask();
+  const { tasks, loading: tasksLoading, updateTask, deleteTask } = useTask();
   const navigate = useNavigate();
 
   const [categoryFilter, setCategoryFilter] = useState<
@@ -34,12 +36,34 @@ const MyTasks = () => {
     });
   }, [tasks, categoryFilter, statusFilter]);
 
+  // Search results, read through the live task list so edits show up
+  // and deleted tasks drop out immediately.
+  const visibleResults = useMemo(
+    () =>
+      results
+        .map((result) => tasks.find((task) => task._id === result._id))
+        .filter((task): task is NonNullable<typeof task> => Boolean(task)),
+    [results, tasks],
+  );
+
   const taskPendingDelete = tasks.find((t) => t._id === pendingDeleteId);
 
-  const handleConfirmDelete = () => {
-    if (pendingDeleteId) {
-      deleteTask(pendingDeleteId);
+  const handleToggle = async (id: string, completed: boolean) => {
+    try {
+      await updateTask(id, { completed: !completed });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Could not update task"));
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    try {
+      await deleteTask(pendingDeleteId);
+      toast.success("Task deleted");
       setPendingDeleteId(null);
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Could not delete task"));
     }
   };
 
@@ -63,6 +87,7 @@ const MyTasks = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search tasks..."
+          aria-label="Search tasks"
           className="w-full border border-gray-300 rounded-lg px-4 py-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[#974FD0]"
         />
         {searchTerm && (
@@ -70,9 +95,9 @@ const MyTasks = () => {
             type="button"
             onClick={() => setSearchTerm("")}
             aria-label="Clear search"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-500 text-xl "
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 text-xl"
           >
-            x
+            ×
           </button>
         )}
       </div>
@@ -112,55 +137,59 @@ const MyTasks = () => {
             Search results
           </h2>
 
-          {loading ? (
+          {loading || tasksLoading ? (
             <p className="text-gray-500 py-6">Searching tasks...</p>
           ) : error ? (
             <div className="py-4">
               <p className="text-red-500">{error}</p>
 
-              {error.toLowerCase().includes("log  in") && (
+              {error.toLowerCase().includes("log in") && (
                 <button
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/signin")}
                   className="text-purple-600 underline mt-2"
                 >
                   Log in
                 </button>
               )}
             </div>
-          ) : results.length === 0 ? (
+          ) : visibleResults.length === 0 ? (
             <p className="text-gray-400 text-center py-12">
               No tasks found for "{searchTerm.trim()}".
             </p>
           ) : (
             <div className="flex flex-col gap-4">
-              {results.map((task) => (
-                <TaskCard key={task._id} task={task} readOnly />
-              ))}
-            </div>
-          )}
-        </section>
-      ) : (
-        <>
-          {filteredTasks.length === 0 ? (
-            <p className="text-gray-400 text-center py-12">
-              No tasks match these filters.
-            </p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {filteredTasks.map((task) => (
+              {visibleResults.map((task) => (
                 <TaskCard
                   key={task._id}
                   task={task}
-                  onToggleComplete={(id) =>
-                    updateTask(id, { completed: !task.completed })
-                  }
+                  onToggleComplete={(id) => handleToggle(id, task.completed)}
                   onDelete={(id) => setPendingDeleteId(id)}
                   onEdit={(id) => navigate(`/edit/${id}`)}
                 />
               ))}
             </div>
           )}
-        </>
+        </section>
+      ) : tasksLoading ? (
+        <p className="text-gray-500 py-6">Loading tasks…</p>
+      ) : filteredTasks.length === 0 ? (
+        <p className="text-gray-400 text-center py-12">
+          {tasks.length === 0
+            ? "You have no tasks yet. Click + Add New Task to create one."
+            : "No tasks match these filters."}
+        </p>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {filteredTasks.map((task) => (
+            <TaskCard
+              key={task._id}
+              task={task}
+              onToggleComplete={(id) => handleToggle(id, task.completed)}
+              onDelete={(id) => setPendingDeleteId(id)}
+              onEdit={(id) => navigate(`/edit/${id}`)}
+            />
+          ))}
+        </div>
       )}
 
       {taskPendingDelete && (

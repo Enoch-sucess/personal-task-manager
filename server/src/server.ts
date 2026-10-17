@@ -15,3 +15,10 @@ const startServer = async () => {
 };
 
 startServer();
+
+
+
+// "email": "test@example.com",
+// "username": "testuser",
+// "password": "password123"
+//  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYmVjNTUxMDkyYzk2Y2IzMDA3MmQ2YSIsImlhdCI6MTc5MDg5OTgxNCwiZXhwIjoxNzkxNTA0NjE0fQ.CFtdUTsnLQtrTEotAjxHYehSqcbrJnMDCcEKNgCjjfA"
